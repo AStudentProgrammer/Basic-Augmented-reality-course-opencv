@@ -2,20 +2,21 @@ import cv2 as cv
 from cv2 import aruco
 import numpy as np
 
-marker_dict = aruco.Dictionary_get(aruco.DICT_4X4_50)
+marker_dict = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
 
-param_markers = aruco.DetectorParameters_create()
+param_markers = aruco.DetectorParameters()
 
-cap = cv.VideoCapture(0)
+cap = cv.VideoCapture(2)
 
 while True:
     ret, frame = cap.read()
     if not ret:
         break
     gray_frame = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
-    marker_corners, marker_IDs, reject = aruco.detectMarkers(
-        gray_frame, marker_dict, parameters=param_markers
+    detector = aruco.ArucoDetector(
+        marker_dict, param_markers
     )
+    marker_corners, marker_IDs, reject = detector.detectMarkers(gray_frame)
     if marker_corners:
         for ids, corners in zip(marker_IDs, marker_corners):
             cv.polylines(
